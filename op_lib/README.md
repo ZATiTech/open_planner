@@ -1,4 +1,4 @@
-# OpenPlanner
+# OpenPlanner - Core Library for OpenPlanner
 
 ## Purpose
 
