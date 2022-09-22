@@ -32,7 +32,6 @@
   <depend>image_transport</depend>
   
   <depend>velodyne_pointcloud</depend>
-  <depend>velodyne_rawdata</depend>
 
   <export>
     <build_type>ament_cmake</build_type>
