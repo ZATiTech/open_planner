@@ -13,8 +13,8 @@
 #include <fstream>
 #include <algorithm>
 
-#define ACCEPT_USE_OF_DEPRECATED_PROJ_API_H
-#include <proj_api.h>
+// #define ACCEPT_USE_OF_DEPRECATED_PROJ_API_H
+#include <proj.h>
 
 
 #define RIGHT_INITIAL_TURNS_COST 0
@@ -2005,57 +2005,85 @@ void MappingHelpers::llaToxyz_proj(const std::string& proj_str, const WayPoint& 
 {
 	if(proj_str.size() < 8) return;
 
-	projPJ pj_latlong, pj_utm;
-	pj_latlong = pj_init_plus("+proj=latlong");
-	pj_utm = pj_init_plus(proj_str.c_str());
+	PJ_CONTEXT *C = proj_context_create();
+	PJ *P = proj_create_crs_to_crs (C, "EPSG:4326", proj_str.c_str(), NULL);
 
-	double _intern_lat = lat;
-	double _intern_lon = lon;
+	if(P == 0) return;
 
-	double _z = alt;
-	double _x = DEG2RAD*_intern_lon;
-	double _y = DEG2RAD*_intern_lat;
+	PJ_COORD gps_degrees = proj_coord (lat, lon, alt, 0);
+	PJ_COORD xyz_out = proj_trans (P, PJ_FWD, gps_degrees);
+	x_out = xyz_out.enu.e + origin.pos.x;
+	y_out = xyz_out.enu.n + origin.pos.y;
+	z_out = xyz_out.enu.u + origin.pos.z;
 
-	if(pj_latlong != 0 && pj_utm !=0 )
-	{
-		pj_transform(pj_latlong, pj_utm, 1, 1, &_x, &_y, &_z);
-		y_out = _y + origin.pos.y;
-		x_out = _x + origin.pos.x;
-		z_out = _z + origin.pos.z;
-	}
-	else
-	{
-		x_out = y_out = z_out = 0;
-	}
+	proj_destroy (P);
+    proj_context_destroy (C); /* may be omitted in the single threaded case */
+
+	// projPJ pj_latlong, pj_utm;
+	// pj_latlong = pj_init_plus("+proj=latlong");
+	// pj_utm = pj_init_plus(proj_str.c_str());
+
+	// double _intern_lat = lat;
+	// double _intern_lon = lon;
+
+	// double _z = alt;
+	// double _x = DEG2RAD*_intern_lon;
+	// double _y = DEG2RAD*_intern_lat;
+
+	// if(pj_latlong != 0 && pj_utm !=0 )
+	// {
+	// 	pj_transform(pj_latlong, pj_utm, 1, 1, &_x, &_y, &_z);
+	// 	y_out = _y + origin.pos.y;
+	// 	x_out = _x + origin.pos.x;
+	// 	z_out = _z + origin.pos.z;
+	// }
+	// else
+	// {
+	// 	x_out = y_out = z_out = 0;
+	// }
 }
 
 void MappingHelpers::xyzTolla_proj(const std::string& proj_str, const WayPoint& origin, const double& x_in,
 		const double& y_in, const double& z_in, double& lat, double& lon, double& alt)
 {
-	if(proj_str.size() < 8) return;
+	PJ_CONTEXT *C = proj_context_create();
+	PJ *P = proj_create_crs_to_crs (C, "EPSG:4326", proj_str.c_str(), NULL);
 
-	projPJ pj_latlong, pj_utm;
-	pj_latlong = pj_init_plus("+proj=latlong");
-	pj_utm = pj_init_plus(proj_str.c_str());
+	if(P == 0) return;
 
-	double _lon = x_in - origin.pos.x;
-	double _lat = y_in - origin.pos.y;
-	double _alt = z_in - origin.pos.z;
+	PJ_COORD xyz_in = proj_coord (x_in-origin.pos.x, y_in-origin.pos.y, z_in-origin.pos.z, 0);	
+	PJ_COORD gps_out = proj_trans (P, PJ_INV, xyz_in);
+	lat = gps_out.lp.phi;
+	lon = gps_out.lp.lam;
+	alt = z_in-origin.pos.z;
 
-	if(pj_latlong != 0 && pj_utm !=0)
-	{
-		pj_transform(pj_utm,pj_latlong, 1, 1, &_lon, &_lat, &_alt);
-		_lon = _lon * RAD2DEG;
-		_lat = _lat * RAD2DEG;
+	proj_destroy (P);
+    proj_context_destroy (C); /* may be omitted in the single threaded case */
 
-		lon = _lon;
-		lat = _lat;
-		alt = _alt;
-	}
-	else
-	{
-		lon = lat = alt = 0;
-	}
+	// if(proj_str.size() < 8) return;
+
+	// projPJ pj_latlong, pj_utm;
+	// pj_latlong = pj_init_plus("+proj=latlong");
+	// pj_utm = pj_init_plus(proj_str.c_str());
+
+	// double _lon = x_in - origin.pos.x;
+	// double _lat = y_in - origin.pos.y;
+	// double _alt = z_in - origin.pos.z;
+
+	// if(pj_latlong != 0 && pj_utm !=0)
+	// {
+	// 	pj_transform(pj_utm,pj_latlong, 1, 1, &_lon, &_lat, &_alt);
+	// 	_lon = _lon * RAD2DEG;
+	// 	_lat = _lat * RAD2DEG;
+
+	// 	lon = _lon;
+	// 	lat = _lat;
+	// 	alt = _alt;
+	// }
+	// else
+	// {
+	// 	lon = lat = alt = 0;
+	// }
 }
 
  void MappingHelpers::correct_gps_coor(double& lat,double& lon)

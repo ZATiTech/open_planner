@@ -31,7 +31,7 @@
   <depend>cv_bridge</depend>
   <depend>image_transport</depend>
   
-  <depend>velodyne_pointcloud</depend>
+  <depend>awf_velodyne_pointcloud</depend>
 
   <export>
     <build_type>ament_cmake</build_type>
