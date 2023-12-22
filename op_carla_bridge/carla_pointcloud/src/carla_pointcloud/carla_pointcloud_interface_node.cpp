@@ -36,7 +36,7 @@ void PointCloudInterface::processScan(const sensor_msgs::msg::PointCloud2::Share
 		  scan_points_xyziradt.pc->points.push_back(ex_p);
 		}
 
-//		std::cout << "CARLA CARLA EX >>>> Received Cloud : " << msg_cloud->points.size() << ", Converted: " << scan_points_xyziradt.pc->points.size() << std::endl;
+		// std::cout << "CARLA CARLA EX >>>> Received Cloud : " << msg_cloud->points.size() << ", Converted: " << scan_points_xyziradt.pc->points.size() << std::endl;
 
 		scan_points_xyziradt.pc->header = pcl_conversions::toPCL(scanMsg->header);
 
@@ -54,25 +54,29 @@ void PointCloudInterface::processScan(const sensor_msgs::msg::PointCloud2::Share
 		  pcl::PointCloud<velodyne_pointcloud::PointXYZIRADT>::Ptr valid_points_xyziradt(new pcl::PointCloud<velodyne_pointcloud::PointXYZIRADT>);
 		  valid_points_xyziradt = velodyne_pointcloud::extractValidPoints(scan_points_xyziradt.pc, 0.5, 120.0);
 		  const auto valid_points_xyzir = convert(valid_points_xyziradt);
-		  if (
-		  	    velodyne_points_pub_->get_subscription_count() > 0 ||
-		  	    velodyne_points_ex_pub_->get_subscription_count() > 0 ||
-		  	    velodyne_points_combined_ex_pub_->get_subscription_count() > 0)
-		  	  {
+		//   if (
+		//   	    velodyne_points_pub_->get_subscription_count() > 0 ||
+		//   	    velodyne_points_ex_pub_->get_subscription_count() > 0 ||
+		//   	    velodyne_points_combined_ex_pub_->get_subscription_count() > 0)
+		//   	  {
 
-		  	    if (velodyne_points_pub_->get_subscription_count() > 0)
+		  	    // if (velodyne_points_pub_->get_subscription_count() > 0)
+				
 		  	    {
 		  	      auto ros_pc_msg_ptr = std::make_unique<sensor_msgs::msg::PointCloud2>();
 		  	      pcl::toROSMsg(*valid_points_xyzir, *ros_pc_msg_ptr);
+				  ros_pc_msg_ptr->header.frame_id = "sensor_kit_base_link";
 		  	      velodyne_points_pub_->publish(std::move(ros_pc_msg_ptr));
 		  	    }
-		  	    if (velodyne_points_ex_pub_->get_subscription_count() > 0)
+		  	    // if (velodyne_points_ex_pub_->get_subscription_count() > 0)
 		  	    {
-		  	      auto ros_pc_msg_ptr = std::make_unique<sensor_msgs::msg::PointCloud2>();
-		  	      pcl::toROSMsg(*valid_points_xyziradt, *ros_pc_msg_ptr);
-		  	      velodyne_points_ex_pub_->publish(std::move(ros_pc_msg_ptr));
+		  	      auto ros_pc_ex_msg_ptr = std::make_unique<sensor_msgs::msg::PointCloud2>();
+		  	      pcl::toROSMsg(*valid_points_xyziradt, *ros_pc_ex_msg_ptr);
+
+				  ros_pc_ex_msg_ptr->header.frame_id = "sensor_kit_base_link";
+		  	      velodyne_points_ex_pub_->publish(std::move(ros_pc_ex_msg_ptr));
 		  	    }
-		  	  }
+		  	//   }
 	}
 	else
 	{
@@ -165,13 +169,13 @@ PointCloudInterface::PointCloudInterface(const rclcpp::NodeOptions & node_option
 	}
 	else
 	{
+		setupTF();
 		velodyne_points_localization =
 			    this->create_publisher<sensor_msgs::msg::PointCloud2>("/sensing/lidar/top/outlier_filtered/pointcloud", rclcpp::SensorDataQoS());
 		velodyne_points_perception =
 			    this->create_publisher<sensor_msgs::msg::PointCloud2>("/sensing/lidar/concatenated/pointcloud", rclcpp::SensorDataQoS());
 	}
-
-	setupTF();
+	
 }
 // }
 

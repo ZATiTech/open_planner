@@ -19,8 +19,7 @@
     <!-- Camera Driver is not needed because the CARLA Simulator already publishes camera_info and image_raw. No relays are needed from hardware drivers. -->
 
     <!-- IMU Driver -->
-    <!-- IMU Driver is not needed -->
-    <!-- <include file="$(find-pkg-share carla_sensor_kit_launch)/launch/imu.launch.xml"/> -->
+    <include file="$(find-pkg-share carla_sensor_kit_launch)/launch/imu.launch.xml"/>
 
     <!-- GNSS Driver -->
     <!-- GNSS Drives in not needed because the CARLA Simulator already publishes both gnss pose and pose with covariance topics -->

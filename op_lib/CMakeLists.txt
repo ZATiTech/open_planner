@@ -19,7 +19,9 @@ ament_auto_add_library(openplanner SHARED
   
 )
 
-target_link_libraries(openplanner
+target_link_libraries(openplanner 
+  tinyxml
+  proj
 )
 
 target_include_directories(openplanner

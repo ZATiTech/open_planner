@@ -1,0 +1,3 @@
+<launch>
+  <node pkg="op_fix2pose" exec="op_fix2pose_node" name="op_fix2pose_interface" output="screen"/>
+</launch>
