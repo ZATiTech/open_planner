@@ -26,13 +26,12 @@ https://github.com/hatem-darweesh/op_bridge/tree/ros2-humble
 
 ## System Installation
 1. Ubuntu 22.04
-2. 
-3. Install Autoware.universe with all its requirements.
+2. Install Autoware.universe with all its requirements.
    - Use "./setup-dev-env.sh" [from](https://autowarefoundation.github.io/autoware-documentation/main/installation/autoware/source-installation/)
    - Check out branch release/2023.10
-5. Make sure these tutorials are working after autoware build
-6. Clone OpenPlanner in the autoware.universe folder (/src/universe/external) 
-7. Clone additional [LIDAR driver](https://github.com/autowarefoundation/awf_velodyne) in the folder (/src/universe/external)
-8. Copy the files (sensor_kit_calibration.yaml, sensors.calibration.yaml) from folder "open_planner/carla_sensor_kit_launch/carla_sensor_kit_description/config" to "src/param/autoware_indicidual_params/carla_sensor_kit"
-9. Rebuild autoware.universe
+3. Make sure these tutorials are working after autoware build
+4. Clone OpenPlanner in the autoware.universe folder (/src/universe/external) 
+5. Clone additional [LIDAR driver](https://github.com/autowarefoundation/awf_velodyne) in the folder (/src/universe/external)
+6. Copy the files (sensor_kit_calibration.yaml, sensors.calibration.yaml) from folder "open_planner/carla_sensor_kit_launch/carla_sensor_kit_description/config" to "src/param/autoware_indicidual_params/carla_sensor_kit"
+7. Rebuild autoware.universe
 
