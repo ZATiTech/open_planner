@@ -9,3 +9,5 @@ I found several issues related to the Autoware requirements such as:
 - Which version from Autoware is stable to work with the bridge.
 
 Fix is on the way. 
+
+Found the working release , check the read me in [op_carla_bridge](https://github.com/ZATiTech/open_planner/tree/humble/op_carla_bridge)
